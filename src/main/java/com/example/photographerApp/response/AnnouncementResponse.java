@@ -14,10 +14,10 @@ public class AnnouncementResponse
     String announcementBody;
 
     LocalDateTime announcementCreateTime;
-    public AnnouncementResponse(Announcement announcement)
+    public AnnouncementResponse(Announcement entity)
     {
-        this.id = announcement.getId();
-        this.announcementBody = announcement.getAnnouncementBody();;
-        this.announcementCreateTime = announcement.getAnnouncementCreateTime();
+        this.id = entity.getId();
+        this.announcementBody = entity.getAnnouncementBody();;
+        this.announcementCreateTime = entity.getAnnouncementCreateTime();
     }
 }

@@ -18,12 +18,12 @@ public class PhotoResponse
 
     LocalDateTime photoCreateTime;
 
-    public PhotoResponse(Photo photo)
+    public PhotoResponse(Photo entity)
     {
-        this.id = photo.getId();
-        this.photoUrl = photo.getPhotoUrl();
-        this.photoDescription = photo.getPhotoDescription();
-        this.photographerName = photo.getPhotographerName();
-        this.photoCreateTime = photo.getPhotoCreateTime();
+        this.id = entity.getId();
+        this.photoUrl = entity.getPhotoUrl();
+        this.photoDescription = entity.getPhotoDescription();
+        this.photographerName = entity.getPhotographerName();
+        this.photoCreateTime = entity.getPhotoCreateTime();
     }
 }

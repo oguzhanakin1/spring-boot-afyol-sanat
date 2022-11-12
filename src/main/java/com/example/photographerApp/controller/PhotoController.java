@@ -3,7 +3,6 @@ package com.example.photographerApp.controller;
 import com.example.photographerApp.model.Photo;
 import com.example.photographerApp.request.PhotoRequest;
 import com.example.photographerApp.response.PhotoResponse;
-import com.example.photographerApp.response.UserResponse;
 import com.example.photographerApp.service.IPhotoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
