@@ -1,27 +1,25 @@
 package com.example.photographerApp.service;
 
+import com.example.photographerApp.exception.MemberNotFoundException;
 import com.example.photographerApp.model.Member;
 import com.example.photographerApp.repository.MemberRepository;
-import com.example.photographerApp.request.MemberRequest;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.example.photographerApp.request.MemberCreateRequest;
+import com.example.photographerApp.request.MemberUpdateRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
-public class MemberService implements IMemberService
+public class MemberService
 {
-    private MemberRepository memberRepository;
+    private final MemberRepository memberRepository;
 
-    @Autowired
     public MemberService(MemberRepository memberRepository)
     {
         this.memberRepository = memberRepository;
     }
 
-    @Override
-    public Member createMember(MemberRequest request)
+    public Member createMember(MemberCreateRequest request)
     {
         Member member = new Member();
         member.setFirstName(request.getFirstName());
@@ -30,8 +28,7 @@ public class MemberService implements IMemberService
         return memberRepository.save(member);
     }
 
-    @Override
-    public Member updateMember(Long memberId, MemberRequest request)
+    public Member updateMember(Long memberId, MemberUpdateRequest request)
     {
         Member memberToEdit = memberRepository.findById(memberId).orElseThrow();
         memberToEdit.setFirstName(request.getFirstName());
@@ -41,20 +38,20 @@ public class MemberService implements IMemberService
         return memberRepository.save(memberToEdit);
     }
 
-    @Override
     public void deleteOneMemberById(Long memberId)
     {
         memberRepository.deleteById(memberId);
     }
-    @Override
     public List<Member> getAll()
     {
         return memberRepository.findAll();
     }
 
-    @Override
-    public Optional<Member> findOneMemberById(Long memberId)
+    public Member findOneMemberById(Long memberId)
     {
-        return memberRepository.findById(memberId);
+        return memberRepository.findById(memberId)
+                .orElseThrow(()->
+                        new MemberNotFoundException("Member not found with id: "
+                                + memberId));
     }
 }

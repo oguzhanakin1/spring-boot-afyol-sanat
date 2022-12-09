@@ -1,10 +1,10 @@
 package com.example.photographerApp.controller;
 
 import com.example.photographerApp.model.Member;
-import com.example.photographerApp.request.MemberRequest;
+import com.example.photographerApp.request.MemberCreateRequest;
+import com.example.photographerApp.request.MemberUpdateRequest;
 import com.example.photographerApp.response.MemberResponse;
-import com.example.photographerApp.service.IMemberService;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.example.photographerApp.service.MemberService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -17,19 +17,11 @@ import java.util.stream.Collectors;
 @RequestMapping("api/members")
 public class MemberController
 {
-    private IMemberService memberService;
+    private final MemberService memberService;
 
-    @Autowired
-    public MemberController(IMemberService memberService)
+    public MemberController(MemberService memberService)
     {
         this.memberService = memberService;
-    }
-
-    @GetMapping
-    @PreAuthorize("hasAnyAuthority('admin', 'editor')")
-    public String member()
-    {
-        return "Üye sayfasına hoşgeldiniz.";
     }
 
     @GetMapping("/all")
@@ -42,15 +34,13 @@ public class MemberController
     @GetMapping("get/{memberId}")
     public ResponseEntity<?> findOneMemberById(@PathVariable Long memberId)
     {
-        Member member = memberService.findOneMemberById(memberId).orElseThrow(()->
-                new RuntimeException("member not found with id: " + memberId));
-
+        Member member = memberService.findOneMemberById(memberId);
         return ResponseEntity.ok(new MemberResponse(member));
     }
 
     @PostMapping("create")
     @PreAuthorize("hasAnyAuthority('admin', 'editor')")
-    public ResponseEntity<?> createMember(@RequestBody MemberRequest request)
+    public ResponseEntity<?> createMember(@RequestBody MemberCreateRequest request)
     {
         return new ResponseEntity<>(memberService.createMember(request), HttpStatus.CREATED);
     }
@@ -58,7 +48,7 @@ public class MemberController
     @PutMapping("update/{memberId}")
     @PreAuthorize("hasAnyAuthority('admin', 'editor')")
     public ResponseEntity<?> updateMember(@PathVariable Long memberId,
-                                         @RequestBody MemberRequest request)
+                                         @RequestBody MemberUpdateRequest request)
     {
         return ResponseEntity.ok(memberService.updateMember(memberId, request));
     }

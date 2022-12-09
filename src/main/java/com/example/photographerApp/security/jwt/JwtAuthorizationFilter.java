@@ -14,7 +14,7 @@ import java.io.IOException;
 public class JwtAuthorizationFilter extends OncePerRequestFilter
 {
     @Autowired
-    private IJwtProvider jwtProvider;
+    private JwtProvider jwtProvider;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)

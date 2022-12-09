@@ -1,14 +1,12 @@
 package com.example.photographerApp.controller;
 
-import com.example.photographerApp.model.Authority;
 import com.example.photographerApp.model.User;
-import com.example.photographerApp.request.UserRequest;
+import com.example.photographerApp.request.UserCreateRequest;
+import com.example.photographerApp.request.UserUpdateRequest;
 import com.example.photographerApp.response.UserResponse;
-import com.example.photographerApp.service.IUserService;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.example.photographerApp.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,10 +16,9 @@ import java.util.stream.Collectors;
 @RequestMapping("api/users")
 public class UserController
 {
-    private IUserService userService;
+    private final UserService userService;
 
-    @Autowired
-    public UserController(IUserService userService)
+    public UserController(UserService userService)
     {
         this.userService = userService;
     }
@@ -36,21 +33,20 @@ public class UserController
     @GetMapping("get/{userId}")
     public ResponseEntity<?> findOneUserByUserId(@PathVariable Long userId)
     {
-        User user = userService.findOneUserById(userId).orElseThrow(()->
-                new UsernameNotFoundException("user not found with userId: " + userId));
+        User user = userService.findOneUserById(userId);
 
         return ResponseEntity.ok(new UserResponse(user));
     }
 
     @PostMapping("create")
-    public ResponseEntity<?> createUser(@RequestBody UserRequest request)
+    public ResponseEntity<?> createUser(@RequestBody UserCreateRequest request)
     {
         return new ResponseEntity<>(userService.createUser(request), HttpStatus.CREATED);
     }
 
     @PutMapping("update/{userId}")
     public ResponseEntity<?> updateUser(@PathVariable Long userId,
-                                        @RequestBody UserRequest request)
+                                        @RequestBody UserUpdateRequest request)
     {
         return ResponseEntity.ok(userService.updateUser(userId, request));
     }

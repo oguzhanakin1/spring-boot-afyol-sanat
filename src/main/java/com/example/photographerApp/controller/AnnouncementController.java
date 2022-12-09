@@ -1,14 +1,16 @@
 package com.example.photographerApp.controller;
 import com.example.photographerApp.model.Announcement;
-import com.example.photographerApp.request.AnnouncementRequest;
+import com.example.photographerApp.request.AnnouncementCreateRequest;
+import com.example.photographerApp.request.AnnouncementUpdateRequest;
 import com.example.photographerApp.response.AnnouncementResponse;
-import com.example.photographerApp.service.IAnnouncementService;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.example.photographerApp.service.AnnouncementService;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -16,19 +18,12 @@ import java.util.stream.Collectors;
 @RequestMapping("api/announcements")
 public class AnnouncementController
 {
-    private IAnnouncementService announcementService;
+    private final AnnouncementService announcementService;
 
-    @Autowired
-    public AnnouncementController(IAnnouncementService announcementService)
+
+    public AnnouncementController(AnnouncementService announcementService)
     {
         this.announcementService = announcementService;
-    }
-
-    @GetMapping
-    @PreAuthorize("hasAnyAuthority('admin', 'manager')")
-    public String announcement()
-    {
-        return "announcement sayfasına hoşgeldiniz.";
     }
 
     @GetMapping("all")
@@ -41,14 +36,13 @@ public class AnnouncementController
     @GetMapping("get/{announcementId}")
     public ResponseEntity<?> findOneAnnouncementById(@PathVariable Long announcementId)
     {
-        Announcement announcement = announcementService.findOneAnnouncementById(announcementId).orElseThrow(()->
-                new RuntimeException("announcement not found with id: " + announcementId));
+        Announcement announcement = announcementService.findOneAnnouncementById(announcementId);
         return ResponseEntity.ok(new AnnouncementResponse(announcement));
     }
 
     @PostMapping("create")
     @PreAuthorize("hasAnyAuthority('admin', 'editor')")
-    public ResponseEntity<?> createAnnouncement(@RequestBody AnnouncementRequest request)
+    public ResponseEntity<?> createAnnouncement(@Valid @RequestBody AnnouncementCreateRequest request)
     {
         return new ResponseEntity<>(announcementService.createAnnouncement(request), HttpStatus.CREATED);
     }
@@ -56,7 +50,7 @@ public class AnnouncementController
     @PutMapping("update/{announcementId}")
     @PreAuthorize("hasAnyAuthority('admin', 'editor')")
     public ResponseEntity<?> updateAnnouncement(@PathVariable Long announcementId,
-                                                @RequestBody AnnouncementRequest request)
+                                                @Valid @RequestBody AnnouncementUpdateRequest request)
     {
         return ResponseEntity.ok(announcementService.updateAnnouncement(announcementId, request));
     }

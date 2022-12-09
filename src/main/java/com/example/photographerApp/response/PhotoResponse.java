@@ -2,6 +2,7 @@ package com.example.photographerApp.response;
 
 import com.example.photographerApp.model.Photo;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 

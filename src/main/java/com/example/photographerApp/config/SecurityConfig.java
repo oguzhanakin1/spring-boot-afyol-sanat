@@ -24,17 +24,13 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig
 {
-    private CustomUserDetailsService customUserDetailsService;
-
     @Autowired
-    public SecurityConfig(CustomUserDetailsService customUserDetailsService)
-    {
-        this.customUserDetailsService = customUserDetailsService;
-    }
+    private CustomUserDetailsService customUserDetailsService;
 
     @Bean(BeanIds.AUTHENTICATION_MANAGER)
     public AuthenticationManager authenticationManager(
-            AuthenticationConfiguration authenticationConfiguration) throws Exception {
+            AuthenticationConfiguration authenticationConfiguration) throws Exception
+    {
         return authenticationConfiguration.getAuthenticationManager();
     }
 
@@ -51,7 +47,8 @@ public class SecurityConfig
     }
 
     @Bean
-    public DaoAuthenticationProvider authenticationProvider() {
+    public DaoAuthenticationProvider authenticationProvider()
+    {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
         authProvider.setUserDetailsService(customUserDetailsService);
         authProvider.setPasswordEncoder(passwordEncoder());

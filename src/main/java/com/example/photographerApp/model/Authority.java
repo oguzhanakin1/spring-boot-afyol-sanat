@@ -2,7 +2,9 @@ package com.example.photographerApp.model;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.util.List;
@@ -10,6 +12,8 @@ import java.util.List;
 @Entity
 @Table(name = "authorities")
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class Authority
 {
     @Id
@@ -18,6 +22,4 @@ public class Authority
     private Long id;
     private String name;
 
-    @OneToMany(mappedBy = "authority", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private List<User> user;
 }

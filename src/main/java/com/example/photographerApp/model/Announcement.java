@@ -1,6 +1,8 @@
 package com.example.photographerApp.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -8,6 +10,8 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "announcements")
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class Announcement
 {
     @Id

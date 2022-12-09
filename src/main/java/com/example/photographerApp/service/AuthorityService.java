@@ -1,24 +1,26 @@
 package com.example.photographerApp.service;
 
+import com.example.photographerApp.exception.AuthorityNotFoundException;
 import com.example.photographerApp.model.Authority;
 import com.example.photographerApp.repository.AuthorityRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class AuthorityService implements IAuthorityService
+public class AuthorityService
 {
-    private AuthorityRepository authorityRepository;
+    private final AuthorityRepository authorityRepository;
 
-    @Autowired
     public AuthorityService(AuthorityRepository authorityRepository)
     {
         this.authorityRepository = authorityRepository;
     }
 
-    @Override
-    public Authority createAuthority(Authority authority)
+    public Authority findOneAuthorityById(Long authorityId)
     {
-        return authorityRepository.save(authority);
+        return authorityRepository.findById(authorityId)
+                .orElseThrow(()->
+                        new AuthorityNotFoundException("Authority not found with id: "
+                                + authorityId));
+
     }
 }

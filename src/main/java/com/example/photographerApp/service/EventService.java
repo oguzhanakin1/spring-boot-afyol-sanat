@@ -1,27 +1,24 @@
 package com.example.photographerApp.service;
 
+import com.example.photographerApp.exception.EventNotFoundException;
 import com.example.photographerApp.model.Event;
 import com.example.photographerApp.repository.EventRepository;
-import com.example.photographerApp.request.EventRequest;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.example.photographerApp.request.EventCreateRequest;
+import com.example.photographerApp.request.EventUpdateRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
-
 @Service
-public class EventService implements IEventService
+public class EventService
 {
-    private EventRepository eventRepository;
+    private final EventRepository eventRepository;
 
-    @Autowired
     public EventService(EventRepository eventRepository)
     {
         this.eventRepository = eventRepository;
     }
 
-    @Override
-    public Event createEvent(EventRequest request)
+    public Event createEvent(EventCreateRequest request)
     {
         Event event = new Event();
         event.setPhoto(request.getPhoto());
@@ -29,8 +26,7 @@ public class EventService implements IEventService
         return eventRepository.save(event);
     }
 
-    @Override
-    public Event updateEvent(Long eventId, EventRequest request)
+    public Event updateEvent(Long eventId, EventUpdateRequest request)
     {
         Event eventToEdit = eventRepository.findById(eventId).orElseThrow();
         eventToEdit.setPhoto(request.getPhoto());
@@ -38,21 +34,21 @@ public class EventService implements IEventService
         return eventRepository.save(eventToEdit);
     }
 
-    @Override
     public void deleteOneEventById(Long eventId)
     {
         eventRepository.deleteById(eventId);
     }
 
-    @Override
     public List<Event> getAll()
     {
         return eventRepository.findAll();
     }
 
-    @Override
-    public Optional<Event> findOneEventById(Long eventId)
+    public Event findOneEventById(Long eventId)
     {
-        return eventRepository.findById(eventId);
+        return eventRepository.findById(eventId)
+                .orElseThrow(()->
+                        new EventNotFoundException
+                                ("Event not found with id: " + eventId));
     }
 }

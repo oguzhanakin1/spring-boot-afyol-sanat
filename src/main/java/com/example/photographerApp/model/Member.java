@@ -1,12 +1,16 @@
 package com.example.photographerApp.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
 @Entity
 @Table(name = "members")
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class Member
 {
     @Id

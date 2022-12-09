@@ -1,37 +1,37 @@
 package com.example.photographerApp.service;
 
+import com.example.photographerApp.exception.UserNotFoundException;
 import com.example.photographerApp.model.User;
-import com.example.photographerApp.repository.AuthorityRepository;
 import com.example.photographerApp.repository.UserRepository;
-import com.example.photographerApp.request.UserRequest;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import com.example.photographerApp.request.UserCreateRequest;
+import com.example.photographerApp.request.UserUpdateRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Service
-public class UserService implements IUserService
+@Transactional
+public class UserService
 {
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
-    @Autowired
-    private AuthorityRepository authorityRepository;
+    private final AuthorityService authorityService;
 
-    private PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
-    @Autowired
-    public UserService(UserRepository userRepository)
+    public UserService(UserRepository userRepository,
+                       AuthorityService authorityService,
+                       PasswordEncoder passwordEncoder)
     {
         this.userRepository = userRepository;
-        passwordEncoder = new BCryptPasswordEncoder();
+        this.authorityService = authorityService;
+        this.passwordEncoder = passwordEncoder;
     }
 
-    @Override
-    public User createUser(UserRequest request)
+    public User createUser(UserCreateRequest request)
     {
         User user = new User();
         user.setEmail(request.getEmail());
@@ -39,14 +39,12 @@ public class UserService implements IUserService
         user.setFirstName(request.getFirstName());
         user.setLastName(request.getLastName());
         user.setUserCreateTime(LocalDateTime.now());
-        user.setAuthority(authorityRepository.findById(request.getAuthorityId())
-                .orElseThrow(()-> new RuntimeException("hata")));
+        user.setAuthority(authorityService.findOneAuthorityById(request.getAuthorityId()));
 
         return userRepository.save(user);
     }
 
-    @Override
-    public User updateUser(Long userId, UserRequest request)
+    public User updateUser(Long userId, UserUpdateRequest request)
     {
         User userToEdit = userRepository.findById(userId).orElseThrow();
 
@@ -58,26 +56,30 @@ public class UserService implements IUserService
         return userRepository.save(userToEdit);
     }
 
-    @Override
     public void deleteOneUserById(Long userId)
     {
         userRepository.deleteById(userId);
     }
 
-    @Override
     public List<User> getAll()
     {
         return userRepository.findAll();
     }
 
-    @Override
-    public Optional<User> findOneUserById(Long userId)
+    public User findOneUserById(Long userId)
     {
-        return userRepository.findById(userId);
+        return userRepository.findById(userId)
+                .orElseThrow(()->
+                        new UserNotFoundException
+                                ("User not found with id: " + userId));
     }
-    @Override
+
     public User findOneUserByEmail(String email)
     {
-        return userRepository.findByEmail(email);
+        return userRepository.findByEmail(email)
+                .orElseThrow(()->
+                        new UserNotFoundException
+                                ("User not found with email: " + email));
+
     }
 }

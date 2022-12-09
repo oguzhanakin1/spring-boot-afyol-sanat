@@ -1,6 +1,8 @@
 package com.example.photographerApp.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -8,6 +10,8 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "users")
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class User
 {
     @Id
@@ -27,10 +31,8 @@ public class User
     @Column(name = "last_name", nullable = false)
     private String lastName;
 
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinTable(name = "user_authority",
-    joinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "id")},
-    inverseJoinColumns = {@JoinColumn(name = "role_id", referencedColumnName = "id")})
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "authority_id", referencedColumnName = "id")
     private Authority authority;
 
     @Column(name="user_create_time")

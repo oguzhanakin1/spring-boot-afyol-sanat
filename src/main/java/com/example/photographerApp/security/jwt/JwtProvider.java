@@ -5,7 +5,6 @@ import com.example.photographerApp.security.CustomUserDetailsService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -29,7 +28,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
-public class JwtProvider implements IJwtProvider
+public class JwtProvider
 {
     @Value("${authentication.jwt.expiration-in-ms}")
     private Long JWT_EXPIRATION_IN_MS;
@@ -37,11 +36,9 @@ public class JwtProvider implements IJwtProvider
     private static final String JWT_TOKEN_PREFIX = "Bearer";
     private static final String JWT_HEADER_STRING = "Authorization";
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
-    @Autowired
-    private CustomUserDetailsService userDetailsService;
+    private final CustomUserDetailsService userDetailsService;
     private final PrivateKey jwtPrivateKey;
     private final PublicKey jwtPublicKey;
 
@@ -53,8 +50,12 @@ public class JwtProvider implements IJwtProvider
     By default, the private key is generated in PKCS#8 format and the public key is generated in X.509 format.
      */
     public JwtProvider(@Value("${authentication.jwt.private-key}") String jwtPrivateKeystr,
-                       @Value("${authentication.jwt.public-key}") String jwtPublicKeystr)
+                       @Value("${authentication.jwt.public-key}") String jwtPublicKeystr,
+                       UserRepository userRepository,
+                       CustomUserDetailsService userDetailsService)
     {
+        this.userRepository = userRepository;
+        this.userDetailsService = userDetailsService;
         try
         {
             KeyFactory keyFactory = getKeyFactory();
@@ -72,7 +73,6 @@ public class JwtProvider implements IJwtProvider
 
     }
 
-    @Override
     public String generateToken(UserDetails authentication)
     {
         String authorities = authentication.getAuthorities().stream()
@@ -86,7 +86,6 @@ public class JwtProvider implements IJwtProvider
                 .compact();
     }
 
-    @Override
     public Authentication getAuthentication(HttpServletRequest request)
     {
         String token = resolveToken(request);
@@ -109,7 +108,6 @@ public class JwtProvider implements IJwtProvider
         return username != null ? new UsernamePasswordAuthenticationToken(userDetails, null, authorities) : null;
     }
 
-    @Override
     public boolean isTokenValid(HttpServletRequest request)
     {
         String token = resolveToken(request);

@@ -2,6 +2,7 @@ package com.example.photographerApp.response;
 
 import com.example.photographerApp.model.User;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 public class UserResponse
